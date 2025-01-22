@@ -1,4 +1,5 @@
 import { Theme } from '@radix-ui/themes'
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v7'
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
 import './app.css'
 
@@ -14,9 +15,11 @@ export const Layout = () => {
 				<Links />
 			</head>
 			<body>
-				<Theme className="h-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]">
-					<Outlet />
-				</Theme>
+				<NuqsAdapter>
+					<Theme className="h-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]">
+						<Outlet />
+					</Theme>
+				</NuqsAdapter>
 				<ScrollRestoration />
 				<Scripts />
 			</body>
@@ -24,8 +27,4 @@ export const Layout = () => {
 	)
 }
 
-const App = () => {
-	return <Outlet />
-}
-
-export default App
+export default Outlet
