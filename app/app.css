@@ -1,5 +1,7 @@
-@layer theme, base, mantine, components, utilities;
-
+@import '@radix-ui/themes/styles.css';
 @import 'tailwindcss';
 
-@import '@mantine/core/styles.layer.css';
+html,
+body {
+	height: 100%;
+}

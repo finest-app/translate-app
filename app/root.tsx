@@ -1,8 +1,5 @@
-import { ColorSchemeScript } from '@mantine/core'
+import { Theme } from '@radix-ui/themes'
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
-import AppLayout from './components/layout/AppLayout'
-import Providers from './Providers'
-
 import './app.css'
 
 export const Layout = () => {
@@ -15,12 +12,11 @@ export const Layout = () => {
 				<link rel="icon" type="image/svg+xml" href="/vite.svg" />
 				<Meta />
 				<Links />
-				<ColorSchemeScript />
 			</head>
 			<body>
-				<Providers>
-					<AppLayout />
-				</Providers>
+				<Theme className="h-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]">
+					<Outlet />
+				</Theme>
 				<ScrollRestoration />
 				<Scripts />
 			</body>
