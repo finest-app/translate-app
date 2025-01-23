@@ -1,7 +1,16 @@
-import { Container, Flex, Card, TextArea } from '@radix-ui/themes'
+import { CopyIcon } from '@radix-ui/react-icons'
+import {
+	Container,
+	Flex,
+	Card,
+	TextArea,
+	Tooltip,
+	IconButton,
+} from '@radix-ui/themes'
 import { parseAsString, parseAsStringEnum, useQueryStates } from 'nuqs'
 import { useEffect, useRef } from 'react'
 import { useFetcher } from 'react-router'
+import { useSpinDelay } from 'spin-delay'
 import { type Route } from './+types/_index'
 import languages from '@/configs/languages'
 
@@ -30,8 +39,12 @@ const HomePage = () => {
 		void initialFetch.current()
 	}, [])
 
+	const loading = useSpinDelay(
+		fetcher.state === 'submitting' || fetcher.state === 'loading',
+	)
+
 	return (
-		<Container size="2" p="4">
+		<Container size="2" px="4" py="8">
 			<Flex direction="column" gap="4">
 				<fetcher.Form method="post">
 					<TextArea
@@ -47,8 +60,14 @@ const HomePage = () => {
 						}}
 					/>
 				</fetcher.Form>
-				{fetcher.state}
 				<Card>
+					<Flex justify="end">
+						<Tooltip content="Copy">
+							<IconButton variant="soft" loading={loading}>
+								<CopyIcon />
+							</IconButton>
+						</Tooltip>
+					</Flex>
 					<pre>{fetcher.data}</pre>
 				</Card>
 			</Flex>
