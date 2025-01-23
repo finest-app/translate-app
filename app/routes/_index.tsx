@@ -38,6 +38,10 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
 		Object.fromEntries(formData) as Record<string, string>,
 	)
 
+	if (input.text.trim() === '') {
+		return ''
+	}
+
 	const response = await context.cloudflare.env.AI.run(
 		'@cf/meta/m2m100-1.2b',
 		input,
