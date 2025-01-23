@@ -58,7 +58,7 @@ const HomePage = () => {
 	})
 
 	useEffect(() => {
-		void initialFetch.current()
+		initialFetch.current()
 	}, [])
 
 	const loading = useSpinDelay(fetcher.state !== 'idle')
@@ -82,8 +82,8 @@ const HomePage = () => {
 						}}
 					/>
 				</fetcher.Form>
-				<Card asChild>
-					<Flex direction="column" gap="4">
+				<Card>
+					<Flex direction="column" gap="2">
 						<Flex justify="end">
 							<Tooltip content="Copy">
 								<IconButton
