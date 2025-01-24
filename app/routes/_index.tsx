@@ -1,15 +1,17 @@
-import { CopyIcon } from '@radix-ui/react-icons'
 import {
 	Container,
-	Flex,
 	Card,
 	Text,
-	Select,
-	TextArea,
+	Textarea,
 	Tooltip,
-	IconButton,
-} from '@radix-ui/themes'
-import { useCopyToClipboard } from '@uidotdev/usehooks'
+	CopyButton,
+	Stack,
+	Group,
+	ActionIcon,
+	NativeSelect,
+} from '@mantine/core'
+import { notifications } from '@mantine/notifications'
+import { IconCopy } from '@tabler/icons-react'
 import {
 	createLoader,
 	parseAsString,
@@ -18,12 +20,11 @@ import {
 } from 'nuqs'
 import { useRef, useEffect } from 'react'
 import { useFetcher } from 'react-router'
-import { toast } from 'sonner'
 import { useSpinDelay } from 'spin-delay'
 import { type Route } from './+types/_index'
 import languages from '@/configs/languages'
 
-const languageCodes = languages.map((language) => language.code)
+const languageCodes = languages.map((language) => language.value)
 
 type LanguageCode = (typeof languageCodes)[number]
 
@@ -71,93 +72,85 @@ const HomePage = () => {
 
 	const loading = useSpinDelay(fetcher.state !== 'idle')
 
-	const [, copyToClipboard] = useCopyToClipboard()
-
 	return (
-		<Container size="2" px="4" py="8">
-			<Flex direction="column" gap="4">
-				<fetcher.Form method="post">
-					<TextArea
+		<Container className="my-auto w-full" size="sm">
+			<fetcher.Form method="post">
+				<Stack gap="md">
+					<Textarea
 						name="text"
-						size="3"
-						radius="full"
+						size="lg"
 						placeholder="Type something..."
+						autosize
+						rows={1}
+						maxRows={12}
 						defaultValue={searchParams.text}
 						onChange={async (event) => {
 							await setSearchParams({ text: event.target.value })
 
-							await fetcher.submit(searchParams, { method: 'post' })
+							await fetcher.submit(event.target.form, { method: 'post' })
 						}}
 					/>
-				</fetcher.Form>
-				<Card>
-					<Flex direction="column" gap="2">
-						<Flex justify="between">
-							<Flex align="center" gap="2">
-								<Select.Root
-									defaultValue={searchParams.source_lang}
-									onValueChange={async (value) => {
-										await setSearchParams({
-											source_lang: value as LanguageCode,
-										})
+					<Card withBorder>
+						<Stack>
+							<Group justify="space-between">
+								<Group align="center">
+									<NativeSelect
+										name="source_lang"
+										defaultValue={searchParams.source_lang}
+										data={languages}
+										onChange={async (event) => {
+											await setSearchParams({
+												source_lang: event.target.value as LanguageCode,
+											})
 
-										await fetcher.submit(
-											{ ...searchParams, source_lang: value as LanguageCode },
-											{ method: 'post' },
-										)
-									}}
-								>
-									<Select.Trigger variant="classic" />
-									<Select.Content variant="soft">
-										{languages.map((language) => (
-											<Select.Item key={language.code} value={language.code}>
-												{language.name}
-											</Select.Item>
-										))}
-									</Select.Content>
-								</Select.Root>
-								<Text>To</Text>
-								<Select.Root
-									defaultValue={searchParams.target_lang}
-									onValueChange={async (value) => {
-										await setSearchParams({
-											target_lang: value as LanguageCode,
-										})
+											await fetcher.submit(event.target.form, {
+												method: 'post',
+											})
+										}}
+									/>
+									<Text>To</Text>
+									<NativeSelect
+										name="target_lang"
+										defaultValue={searchParams.target_lang}
+										data={languages}
+										onChange={async (event) => {
+											await setSearchParams({
+												target_lang: event.target.value as LanguageCode,
+											})
 
-										await fetcher.submit(
-											{ ...searchParams, target_lang: value as LanguageCode },
-											{ method: 'post' },
-										)
-									}}
-								>
-									<Select.Trigger variant="classic" />
-									<Select.Content variant="soft">
-										{languages.map((language) => (
-											<Select.Item key={language.code} value={language.code}>
-												{language.name}
-											</Select.Item>
-										))}
-									</Select.Content>
-								</Select.Root>
-							</Flex>
-							<Tooltip content="Copy">
-								<IconButton
-									variant="soft"
-									loading={loading}
-									onClick={async () => {
-										await copyToClipboard(fetcher.data ?? '')
+											await fetcher.submit(event.target.form, {
+												method: 'post',
+											})
+										}}
+									/>
+								</Group>
+								<CopyButton value={fetcher.data as string}>
+									{({ copy }) => (
+										<Tooltip label="Copy">
+											<ActionIcon
+												className="stroke-1.5"
+												variant="light"
+												size="lg"
+												loading={loading}
+												onClick={() => {
+													copy()
 
-										toast.success('Copied to clipboard')
-									}}
-								>
-									<CopyIcon />
-								</IconButton>
-							</Tooltip>
-						</Flex>
-						{fetcher.data}
-					</Flex>
-				</Card>
-			</Flex>
+													notifications.show({
+														message: 'Copied to clipboard',
+													})
+												}}
+											>
+												<IconCopy className="stroke-1.5 size-4" />
+											</ActionIcon>
+										</Tooltip>
+									)}
+								</CopyButton>
+							</Group>
+							{fetcher.data && <Text>{fetcher.data}</Text>}
+						</Stack>
+					</Card>
+				</Stack>
+			</fetcher.Form>
 		</Container>
 	)
 }

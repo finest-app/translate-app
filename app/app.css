@@ -1,7 +1,11 @@
-@import '@radix-ui/themes/styles.css';
+@layer theme, base, mantine, components, utilities;
+
 @import 'tailwindcss';
 
-html,
-body {
-	height: 100%;
+@import '@mantine/core/styles.layer.css';
+
+@import '@mantine/notifications/styles.css';
+
+@utility stroke-1.5 {
+	stroke-width: 1.5;
 }
