@@ -11,7 +11,7 @@ export const Layout = () => {
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<title>Translate</title>
-				<link rel="icon" type="image/svg+xml" href="/vite.svg" />
+				<link rel="icon" type="image/png" href="/favicon.png" />
 				<Meta />
 				<Links />
 			</head>
