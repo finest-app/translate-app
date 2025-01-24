@@ -3,6 +3,8 @@ import {
 	Container,
 	Flex,
 	Card,
+	Text,
+	Select,
 	TextArea,
 	Tooltip,
 	IconButton,
@@ -22,6 +24,8 @@ import { type Route } from './+types/_index'
 import languages from '@/configs/languages'
 
 const languageCodes = languages.map((language) => language.code)
+
+type LanguageCode = (typeof languageCodes)[number]
 
 const trasnlateSearchParams = {
 	source_lang: parseAsStringEnum(languageCodes).withDefault('en'),
@@ -82,13 +86,60 @@ const HomePage = () => {
 						onChange={async (event) => {
 							await setSearchParams({ text: event.target.value })
 
-							await fetcher.submit(event.target.form)
+							await fetcher.submit(searchParams, { method: 'post' })
 						}}
 					/>
 				</fetcher.Form>
 				<Card>
 					<Flex direction="column" gap="2">
-						<Flex justify="end">
+						<Flex justify="between">
+							<Flex align="center" gap="2">
+								<Select.Root
+									defaultValue={searchParams.source_lang}
+									onValueChange={async (value) => {
+										await setSearchParams({
+											source_lang: value as LanguageCode,
+										})
+
+										await fetcher.submit(
+											{ ...searchParams, source_lang: value as LanguageCode },
+											{ method: 'post' },
+										)
+									}}
+								>
+									<Select.Trigger variant="classic" />
+									<Select.Content variant="soft">
+										{languages.map((language) => (
+											<Select.Item key={language.code} value={language.code}>
+												{language.name}
+											</Select.Item>
+										))}
+									</Select.Content>
+								</Select.Root>
+								<Text>To</Text>
+								<Select.Root
+									defaultValue={searchParams.target_lang}
+									onValueChange={async (value) => {
+										await setSearchParams({
+											target_lang: value as LanguageCode,
+										})
+
+										await fetcher.submit(
+											{ ...searchParams, target_lang: value as LanguageCode },
+											{ method: 'post' },
+										)
+									}}
+								>
+									<Select.Trigger variant="classic" />
+									<Select.Content variant="soft">
+										{languages.map((language) => (
+											<Select.Item key={language.code} value={language.code}>
+												{language.name}
+											</Select.Item>
+										))}
+									</Select.Content>
+								</Select.Root>
+							</Flex>
 							<Tooltip content="Copy">
 								<IconButton
 									variant="soft"

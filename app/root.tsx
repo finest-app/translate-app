@@ -10,7 +10,7 @@ export const Layout = () => {
 			<head>
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
-				<title>React Router Starter</title>
+				<title>Translate</title>
 				<link rel="icon" type="image/svg+xml" href="/vite.svg" />
 				<Meta />
 				<Links />
@@ -18,7 +18,10 @@ export const Layout = () => {
 			<body>
 				<NuqsAdapter>
 					<Toaster position="top-right" />
-					<Theme className="h-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]">
+					<Theme
+						className="h-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"
+						radius="large"
+					>
 						<Outlet />
 					</Theme>
 				</NuqsAdapter>
