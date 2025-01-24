@@ -11,7 +11,7 @@ import {
 	NativeSelect,
 } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
-import { IconCopy } from '@tabler/icons-react'
+import { IconTransfer, IconCopy } from '@tabler/icons-react'
 import {
 	createLoader,
 	parseAsString,
@@ -93,34 +93,52 @@ const HomePage = () => {
 					<Card withBorder>
 						<Stack>
 							<Group justify="space-between">
-								<Group align="center">
+								<Group align="center" gap="xs">
 									<NativeSelect
 										name="source_lang"
-										defaultValue={searchParams.source_lang}
+										value={searchParams.source_lang}
 										data={languages}
 										onChange={async (event) => {
 											await setSearchParams({
 												source_lang: event.target.value as LanguageCode,
 											})
 
-											await fetcher.submit(event.target.form, {
-												method: 'post',
-											})
+											await fetcher.submit(event.target.form)
 										}}
 									/>
-									<Text>To</Text>
+									<Tooltip label="Swap">
+										<ActionIcon
+											className="stroke-1.5"
+											type="button"
+											variant="subtle"
+											size="lg"
+											onClick={async (event) => {
+												await setSearchParams({
+													source_lang: searchParams.target_lang,
+													target_lang: searchParams.source_lang,
+												})
+
+												await fetcher.submit(
+													(event.target as HTMLElement).closest('form'),
+													{
+														method: 'post',
+													},
+												)
+											}}
+										>
+											<IconTransfer className="stroke-1.5 size-4" />
+										</ActionIcon>
+									</Tooltip>
 									<NativeSelect
 										name="target_lang"
-										defaultValue={searchParams.target_lang}
+										value={searchParams.target_lang}
 										data={languages}
 										onChange={async (event) => {
 											await setSearchParams({
 												target_lang: event.target.value as LanguageCode,
 											})
 
-											await fetcher.submit(event.target.form, {
-												method: 'post',
-											})
+											await fetcher.submit(event.target.form)
 										}}
 									/>
 								</Group>
@@ -146,7 +164,7 @@ const HomePage = () => {
 									)}
 								</CopyButton>
 							</Group>
-							{fetcher.data && <Text>{fetcher.data}</Text>}
+							{fetcher.data && <Text component="output">{fetcher.data}</Text>}
 						</Stack>
 					</Card>
 				</Stack>
