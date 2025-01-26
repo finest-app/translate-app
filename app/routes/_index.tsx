@@ -21,6 +21,7 @@ import {
 import { useRef, useEffect } from 'react'
 import { useFetcher } from 'react-router'
 import { useSpinDelay } from 'spin-delay'
+import TypeIt from 'typeit-react'
 import { type Route } from './+types/_index'
 import languages from '@/configs/languages'
 
@@ -164,7 +165,13 @@ const HomePage = () => {
 									)}
 								</CopyButton>
 							</Group>
-							{fetcher.data && <Text component="output">{fetcher.data}</Text>}
+							{fetcher.data && (
+								<Text component="output">
+									<TypeIt options={{ cursor: false, speed: 10 }}>
+										{fetcher.data}
+									</TypeIt>
+								</Text>
+							)}
 						</Stack>
 					</Card>
 				</Stack>
