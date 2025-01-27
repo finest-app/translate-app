@@ -27,7 +27,10 @@ type LanguageCode = (typeof languages)[number]['value']
 const HomePage = () => {
 	const fetcher = useFetcher<Info['loaderData']>()
 
-	const [searchParams, setSearchParams] = useQueryStates(trasnlateSearchParams)
+	const [searchParams, setSearchParams] = useQueryStates(
+		trasnlateSearchParams,
+		{ history: 'replace' },
+	)
 
 	const submit = useDebouncedCallback(fetcher.submit, 500)
 
