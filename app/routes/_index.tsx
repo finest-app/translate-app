@@ -1,7 +1,7 @@
 import {
 	Container,
 	Card,
-	Text,
+	Box,
 	Textarea,
 	Tooltip,
 	CopyButton,
@@ -10,60 +10,30 @@ import {
 	ActionIcon,
 	NativeSelect,
 } from '@mantine/core'
+import { useDebouncedCallback } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
 import { IconTransfer, IconCopy } from '@tabler/icons-react'
-import {
-	createLoader,
-	parseAsString,
-	parseAsStringEnum,
-	useQueryStates,
-} from 'nuqs'
+import { useQueryStates } from 'nuqs'
 import { useRef, useEffect } from 'react'
 import { useFetcher } from 'react-router'
 import { useSpinDelay } from 'spin-delay'
-import TypeIt from 'typeit-react'
-import { type Route } from './+types/_index'
+import { type Info } from './+types/translate'
+import Typewriter from '@/components/Typewriter'
 import languages from '@/configs/languages'
+import trasnlateSearchParams from '@/configs/trasnlateSearchParams'
 
-const languageCodes = languages.map((language) => language.value)
-
-type LanguageCode = (typeof languageCodes)[number]
-
-const trasnlateSearchParams = {
-	source_lang: parseAsStringEnum(languageCodes).withDefault('en'),
-	target_lang: parseAsStringEnum(languageCodes).withDefault('zh'),
-	text: parseAsString.withDefault(''),
-}
-
-const loadTranslateSearchParams = createLoader(trasnlateSearchParams)
-
-export const action = async ({ request, context }: Route.ActionArgs) => {
-	const formData = await request.formData()
-
-	const input = loadTranslateSearchParams(
-		Object.fromEntries(formData) as Record<string, string>,
-	)
-
-	if (input.text.trim() === '') {
-		return ''
-	}
-
-	const response = await context.cloudflare.env.AI.run(
-		'@cf/meta/m2m100-1.2b',
-		input,
-	)
-
-	return response.translated_text
-}
+type LanguageCode = (typeof languages)[number]['value']
 
 const HomePage = () => {
-	const fetcher = useFetcher<typeof action>()
+	const fetcher = useFetcher<Info['loaderData']>()
 
 	const [searchParams, setSearchParams] = useQueryStates(trasnlateSearchParams)
 
+	const submit = useDebouncedCallback(fetcher.submit, 500)
+
 	const initialFetch = useRef(() => {
 		if (searchParams.text.trim()) {
-			void fetcher.submit(searchParams, { method: 'post' })
+			submit(searchParams, { method: 'get', action: '/translate' })
 		}
 	})
 
@@ -75,7 +45,7 @@ const HomePage = () => {
 
 	return (
 		<Container className="my-auto w-full" size="sm">
-			<fetcher.Form method="post">
+			<fetcher.Form method="get" action="/translate">
 				<Stack gap="md">
 					<Textarea
 						name="text"
@@ -88,7 +58,7 @@ const HomePage = () => {
 						onChange={async (event) => {
 							await setSearchParams({ text: event.target.value })
 
-							await fetcher.submit(event.target.form, { method: 'post' })
+							submit(event.target.form, { method: 'get' })
 						}}
 					/>
 					<Card withBorder>
@@ -104,7 +74,7 @@ const HomePage = () => {
 												source_lang: event.target.value as LanguageCode,
 											})
 
-											await fetcher.submit(event.target.form)
+											submit(event.target.form)
 										}}
 									/>
 									<Tooltip label="Swap">
@@ -119,12 +89,9 @@ const HomePage = () => {
 													target_lang: searchParams.source_lang,
 												})
 
-												await fetcher.submit(
-													(event.target as HTMLElement).closest('form'),
-													{
-														method: 'post',
-													},
-												)
+												submit((event.target as HTMLElement).closest('form'), {
+													method: 'get',
+												})
 											}}
 										>
 											<IconTransfer className="stroke-1.5 size-4" />
@@ -139,7 +106,7 @@ const HomePage = () => {
 												target_lang: event.target.value as LanguageCode,
 											})
 
-											await fetcher.submit(event.target.form)
+											submit(event.target.form)
 										}}
 									/>
 								</Group>
@@ -166,11 +133,9 @@ const HomePage = () => {
 								</CopyButton>
 							</Group>
 							{fetcher.data && (
-								<Text component="output">
-									<TypeIt options={{ cursor: false, speed: 10 }}>
-										{fetcher.data}
-									</TypeIt>
-								</Text>
+								<Box component="output">
+									<Typewriter text={fetcher.data} duration={0.5} />
+								</Box>
 							)}
 						</Stack>
 					</Card>
